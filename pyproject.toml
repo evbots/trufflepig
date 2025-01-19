@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=43.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trufflepig"
+version = "0.1.0"
+description = "sniff out hidden requests in your tests!"
+readme = "README.md"
+requires-python = ">=3.7"
+authors = [
+  { name = "evbots", email = "3102036+evbots@users.noreply.github.com" }
+]
+
+[project.entry-points."pytest11"]
+trufflepig = "trufflepig.plugin"
