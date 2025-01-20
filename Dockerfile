@@ -1,4 +1,4 @@
-# Use a base image with necessary tools
+# Use Debian Slim as the base image
 FROM debian:bullseye-slim
 
 # Install system dependencies
@@ -11,7 +11,9 @@ RUN apt-get update && \
     tshark \
     sudo \
     python3 \
-    python3-pip
+    python3-pip \
+    procps \
+    iptables
 
 # Set working directory
 WORKDIR /app
@@ -26,8 +28,9 @@ RUN pip3 install --upgrade pip setuptools
 # (This will now use the mounted volume)
 RUN pip3 install -e ".[test]"
 
-# Modify sudoers file to include the path to sysctl
-RUN echo "Defaults    secure_path = /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/sbin" >> /etc/sudoers
+# Making sure `iptables` is on the path for sudo. The `which iptables` command is used to find the 
+# exact path to the `iptables` command
+RUN echo "Defaults    secure_path = /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$(/usr/bin/which iptables | xargs dirname)" >> /etc/sudoers
 
 # Command to run the tests (using sudo)
 # CMD ["sudo", "-E", "pytest", "-v"]
