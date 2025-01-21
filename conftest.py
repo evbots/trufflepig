@@ -2,10 +2,10 @@ import pytest
 
 def pytest_addoption(parser):
     """
-    Add a command-line option --trufflepig to enable the trufflepig fixture.
+    Add a command-line option --truffle-hunt to enable the trufflepig fixture.
     """
     parser.addoption(
-        "--trufflepig",
+        "--truffle-hunt",
         action="store_true",
         default=False,
         help="Enable the trufflepig fixture which wraps all other fixtures."
@@ -14,9 +14,9 @@ def pytest_addoption(parser):
 
 def pytest_configure(config):
     """
-    Register the TrufflepigPlugin if --trufflepig is set.
+    Register the TrufflepigPlugin if --truffle-hunt is set.
     """
-    if config.getoption("--trufflepig"):
+    if config.getoption("--truffle-hunt"):
         config.pluginmanager.register(TrufflepigPlugin(), "trufflepig-plugin")
 
 

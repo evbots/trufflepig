@@ -22,4 +22,4 @@ test = [
 
 
 [project.entry-points."pytest11"]
-trufflepig = "trufflepig.plugin"
+trufflepig = "plugin"
