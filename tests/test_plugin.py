@@ -2,7 +2,7 @@ import pytest
 import requests
 
 
-def test_http_request_logged(monitor_http_requests):
+def test_http_request_logged():
     """
     Tests that an external HTTP request is logged correctly.
     """

@@ -115,7 +115,7 @@ def analyze_pcap(pcap_file, test_name):
 # --- The Pytest Fixture ---
 
 @pytest.fixture(scope="function")
-def monitor_http_requests(request):
+def trufflepig(request):
     """
     Creates a new netns for *this* Python process so that the test's
     HTTP traffic actually egresses from 192.168.100.x and can be seen by tcpdump.
