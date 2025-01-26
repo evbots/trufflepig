@@ -6,7 +6,7 @@ import uuid
 import time
 import ctypes
 
-LOG_FILE = "http_requests.log"
+LOG_FILE = "truffles.log"
 
 # --- Low-level setns() via ctypes ---
 
@@ -52,11 +52,17 @@ def setup_nat(ns_name, veth0_ip, external_interface):
     subprocess.run(["sudo", "sysctl", "-w", "net.ipv4.ip_forward=1"], check=True)
     subprocess.run(["sudo", "ip", "netns", "exec", ns_name, 
                     "ip", "route", "add", "default", "via", veth0_ip], check=True)
-    subprocess.run([
-        "sudo", "iptables", "-t", "nat", "-A", "POSTROUTING",
-        "-s", f"{veth0_ip}/24",
-        "-o", external_interface, "-j", "MASQUERADE"
-    ], check=True)
+    subprocess.run(
+        [
+            "sudo", "iptables", "-t", "nat", "-A", "POSTROUTING",
+            "-s", f"{veth0_ip}/24",
+            "-o", external_interface, "-j", "MASQUERADE"
+        ],
+        check=True,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
 
 def start_tcpdump(ns_name, interface, pcap_file):
     """
@@ -198,3 +204,38 @@ def trufflepig(request):
         subprocess.run(["sudo", "ip", "link", "delete", veth0_name], check=False)
         delete_netns(ns_name)
 
+
+def pytest_addoption(parser):
+    """
+    Add a command-line option --truffle-hunt to enable the trufflepig fixture.
+    """
+    parser.addoption(
+        "--truffle-hunt",
+        action="store_true",
+        default=False,
+        help="Enable the trufflepig fixture which wraps all other fixtures."
+    )
+
+
+def pytest_configure(config):
+    """
+    Register the TrufflepigPlugin if --truffle-hunt is set.
+    """
+    if config.getoption("--truffle-hunt"):
+        config.pluginmanager.register(TrufflepigPlugin(), "trufflepig-plugin")
+
+
+class TrufflepigPlugin:
+    """
+    When active, this plugin injects 'trufflepig' as the first fixture for each test.
+    """
+
+    def pytest_collection_modifyitems(self, session, config, items):
+        """
+        After tests are collected, insert 'trufflepig' as the first fixture
+        for each test item if it isn't already in the list.
+        """
+        for item in items:
+            if "trufflepig" not in item.fixturenames:
+                # Insert as the first fixture so it sets up before anything else
+                item.fixturenames.insert(0, "trufflepig")

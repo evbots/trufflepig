@@ -8,4 +8,4 @@ def test_http_request_logged():
     """
     requests.get("http://www.example.com")
 
-    # observe http_requests.log to see the requests logged!
+    # observe truffles.log to see the requests logged!
