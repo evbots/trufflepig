@@ -10,6 +10,24 @@ This package leverages network namespaces, a Linux feature. That means you won't
 
 `trufflepig = { git = "https://github.com/evbots/trufflepig.git", rev="<commit hash here>" }`
 
+The linux environment where you run the tests must have the following package available. See the install commands below for additional context.
+
+```bash
+# Install system dependencies
+apt-get update && \
+apt-get install -y debconf-utils && \
+echo 'wireshark-common wireshark-common/install-setuid boolean true' | debconf-set-selections && \
+DEBIAN_FRONTEND=noninteractive apt-get install -y \
+iproute2 \
+tcpdump \
+tshark \
+sudo \
+python3 \
+python3-pip \
+procps \
+iptables
+```
+
 ### Use
 
 `pytest [other arguments] --truffle-hunt`
